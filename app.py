@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from docx import Document  # Nécessite l'installation de python-docx
+from docx import Document  
 import os
 import tempfile
 from zipfile import ZipFile
@@ -9,11 +9,11 @@ import random
 import requests
 import shutil
 
-# Configuration de la page
+
 st.set_page_config(page_title="Générateur de Questionnaires", layout="wide")
 st.title("Générateur de Questionnaires de Satisfaction à Chaud")
 
-# Colonnes requises dans le fichier Excel
+
 REQUIRED_COLS = ['nom', 'prénom', 'email', 'session', 'formation']
 
 def remplacer_placeholders(paragraph, replacements):
