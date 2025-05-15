@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from docx import Document
+from docx import Document  # Nécessite l'installation de python-docx
 import os
 import tempfile
 from zipfile import ZipFile
@@ -9,13 +9,15 @@ import random
 import requests
 import shutil
 
+# Configuration de la page
 st.set_page_config(page_title="Générateur de Questionnaires", layout="wide")
 st.title("Générateur de Questionnaires de Satisfaction à Chaud")
 
+# Colonnes requises dans le fichier Excel
 REQUIRED_COLS = ['nom', 'prénom', 'email', 'session', 'formation']
 
 def remplacer_placeholders(paragraph, replacements):
-    """Remplace les placeholders dans un paragraphe"""
+    """Remplace les placeholders dans un paragraphe Word"""
     if not paragraph.text:
         return
     original_text = paragraph.text
@@ -27,10 +29,10 @@ def remplacer_placeholders(paragraph, replacements):
 
 def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
     """Génère un commentaire IA via OpenRouter"""
-    url = "https://api.openrouter.ai/api/v1/chat/completions"
+    url = "https://api.openrouter.ai/api/v1/chat/completions "
     headers = {
         "Authorization": f"Bearer {openrouter_api_key}",
-        "HTTP-Referer": "https://formation-entreprise.com",
+        "HTTP-Referer": "https://formation-entreprise.com ",
         "X-Title": "Générateur Questionnaires",
         "Content-Type": "application/json"
     }
@@ -147,7 +149,7 @@ generer_ia = st.checkbox("Activer la génération de commentaires IA (nécessite
 openrouter_api_key = ""
 if generer_ia:
     openrouter_api_key = st.text_input("Clé API OpenRouter", type="password")
-    st.markdown("[Obtenir une clé API](https://openrouter.ai/keys)")
+    st.markdown("[Obtenir une clé API](https://openrouter.ai/keys )")
 
 if excel_file and template_file:
     try:
