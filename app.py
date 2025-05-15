@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from docx import Document  
+from docx import Document
 import os
 import tempfile
 from zipfile import ZipFile
