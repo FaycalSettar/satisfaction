@@ -13,7 +13,7 @@ st.title("Générateur de Questionnaires de Satisfaction à Chaud")
 REQUIRED_COLS = ['nom', 'prénom', 'email', 'session', 'formation']
 
 def remplacer_placeholders(paragraph, replacements):
-    """Remplace les placeholders classiques"""
+    """Remplace les placeholders dans un paragraphe"""
     if not paragraph.text:
         return
     
@@ -25,7 +25,7 @@ def remplacer_placeholders(paragraph, replacements):
                     run.text = run.text.replace(key, value)
 
 def generer_questionnaire(participant, template_path):
-    """Génère le questionnaire avec gestion avancée des checkboxes"""
+    """Génère un questionnaire avec gestion précise des cases à cocher"""
     doc = Document(template_path)
     
     replacements = {
@@ -39,19 +39,32 @@ def generer_questionnaire(participant, template_path):
 
     current_section = None
     formation_choice = str(participant['formation']).strip().lower()
+    answer = None
 
     for para in doc.paragraphs:
-        # Remplacement des variables classiques
+        # Remplacement des variables de base
         remplacer_placeholders(para, replacements)
 
-        # Détection des sections
         text = para.text.lower()
         
+        # Détection des sections principales
         if 'formation suivie' in text:
             current_section = 'formation'
             continue
             
-        elif 'merci de nous partager votre évaluation' in text:
+        elif any(keyword in text for keyword in [
+            'évaluation de la formation', 
+            'qualité du contenu',
+            'pertinence du contenu',
+            'clarté et organisation',
+            'qualité des supports',
+            'utilité des supports',
+            'compétence et professionnalisme',
+            'clarté des explications',
+            'capacité à répondre',
+            'interactivité et dynamisme',
+            'globalement'
+        ]):
             current_section = 'satisfaction'
             answer = random.choice(['Très satisfait', 'Satisfait'])
             continue
@@ -61,29 +74,29 @@ def generer_questionnaire(participant, template_path):
             answer = 'Non concerné'
             continue
 
-        # Traitement des checkboxes
+        # Traitement des cases à cocher
         if '{{checkbox}}' in para.text:
             option_text = para.text.replace('{{checkbox}}', '').strip()
-            
+            clean_option = option_text.split(']')[-1].strip().lower()
+
             if current_section == 'formation':
-                match = formation_choice in option_text.lower()
-                new_text = '☑ ' if match else '☐ '
-                new_text += option_text.split(']')[0].split('[')[-1]
+                is_selected = formation_choice == clean_option
+                symbol = '☑' if is_selected else '☐'
                 
             elif current_section == 'satisfaction':
-                is_selected = answer in option_text
-                new_text = '☑ ' if is_selected else '☐ '
-                new_text += option_text.split(']')[0].split('[')[-1]
+                is_selected = answer.lower() == clean_option
+                symbol = '☑' if is_selected else '☐'
                 
             elif current_section == 'handicap':
-                is_selected = 'Non concerné' in option_text
-                new_text = '☑ ' if is_selected else '☐ '
-                new_text += option_text.split(']')[0].split('[')[-1]
+                is_selected = 'non concerné' in clean_option
+                symbol = '☑' if is_selected else '☐'
                 
             else:
-                new_text = '☐ ' + option_text.split(']')[0].split('[')[-1]
+                symbol = '☐'
 
-            para.text = new_text
+            # Conservation de la mise en forme originale
+            original_text = option_text.split('[')[-1].split(']')[0].strip()
+            para.text = f'{symbol} {original_text}'
 
     # Génération du nom de fichier
     safe_prenom = re.sub(r'[^a-zA-Z0-9]', '_', str(participant['prénom']))
