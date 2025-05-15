@@ -44,7 +44,7 @@ def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
     )
     
     data = {
-        "model": "openai/gpt-4",
+        "model": "openai/gpt-4.1",
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.5,
         "max_tokens": 50
