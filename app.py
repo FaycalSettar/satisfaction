@@ -29,7 +29,7 @@ def remplacer_placeholders(paragraph, replacements):
 
 def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
     """Génère un commentaire IA via OpenRouter"""
-    url = "https://api.openrouter.ai/api/v1/chat/completions "
+    url = "https://openrouter.ai/api/v1/chat/completions"
     headers = {
         "Authorization": f"Bearer {openrouter_api_key}",
         "HTTP-Referer": "https://formation-entreprise.com ",
