@@ -28,7 +28,7 @@ def remplacer_placeholders(paragraph, replacements):
                     run.text = run.text.replace(key, value)
 
 def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
-    """Génère un commentaire IA via OpenRouter"""
+ 
     url = "https://api.openrouter.ai/api/v1/chat/completions "
     headers = {
         "Authorization": f"Bearer {openrouter_api_key}",
