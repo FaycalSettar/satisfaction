@@ -4,49 +4,26 @@ from docx import Document
 import os
 import tempfile
 from zipfile import ZipFile
-import re
-import random
+import re  # Pour les expressions régulières
 
 st.set_page_config(page_title="Générateur de Questionnaires", layout="wide")
 st.title("Générateur de Questionnaires de Satisfaction à Chaud")
 
-# Colonnes requises dans Excel
+# Configuration des colonnes requises
 REQUIRED_COLS = ['nom', 'prénom', 'email', 'session', 'formation']
 
-# Fonction pour remplacer les placeholders
+# Fonction de remplacement des placeholders
 def remplacer_placeholders(paragraph, replacements):
     """Remplace les placeholders dans un paragraphe Word"""
     if not paragraph.text:
         return
     
     original_text = paragraph.text
-    
     for key, value in replacements.items():
         if key in original_text:
             for run in paragraph.runs:
                 if key in run.text:
                     run.text = run.text.replace(key, value)
-
-# Fonction spéciale pour traiter les blocs de satisfaction
-def traiter_bloc_satisfaction(bloc_paras):
-    """Traite un bloc de 5 checkboxs de satisfaction"""
-    # Pour la question sur le handicap, toujours cocher "Non concerné"
-    if bloc_paras[0].text.strip() == "Si vous êtes une personne en situation de handicap, êtes-vous satisfait de l’accompagnement et de l’adaptation éventuelle de la formation ? ":
-        # On coche uniquement "Non concerné"
-        bloc_paras[0].text = bloc_paras[0].text.replace("{{checkbox}}", "☑", 1)  # Non concerné
-        # Et on laisse vide les autres options
-        for i in range(1, len(bloc_paras)):
-            bloc_paras[i].text = bloc_paras[i].text.replace("{{checkbox}}", "☐", 1)
-        return
-
-    # Pour les autres questions, choix aléatoire entre "Très satisfait" et "Satisfait"
-    reponse_choisie = random.choice([0, 1])  # 0=Très satisfait, 1=Satisfait
-    
-    for i, para in enumerate(bloc_paras):
-        if i == reponse_choisie:
-            para.text = para.text.replace("{{checkbox}}", "☑", 1)
-        else:
-            para.text = para.text.replace("{{checkbox}}", "☐", 1)
 
 # Fonction de génération d'un questionnaire
 def generer_questionnaire(participant, template_path):
@@ -59,53 +36,20 @@ def generer_questionnaire(participant, template_path):
         "{{prenom}}": str(participant['prénom']),
         "{{email}}": str(participant['email']),
         "{{ref_session}}": str(participant['session']),
-        "{{formation}}": str(participant['formation']),
+        "{{formation}}": str(participant['formation']),  # ✅ Ajout de la variable formation
         "{{formateur}}": "Jean Dupont"  # À personnaliser selon vos besoins
     }
 
-    # Remplacement des placeholders dans les paragraphes
+    # Remplacement dans les paragraphes
     for para in doc.paragraphs:
         remplacer_placeholders(para, replacements)
 
-    # Remplacement des placeholders dans les tableaux
+    # Remplacement dans les tableaux
     for table in doc.tables:
         for row in table.rows:
             for cell in row.cells:
                 for para in cell.paragraphs:
                     remplacer_placeholders(para, replacements)
-
-    # Traitement des blocs de satisfaction
-    bloc_satisfaction = []
-    
-    for para in doc.paragraphs:
-        texte = para.text.strip()
-        
-        # Détection des blocs de satisfaction
-        if any(prefix in texte for prefix in [
-            "Merci de nous partager votre évaluation de la formation :",
-            "Qualité du Contenu de la Formation :",
-            "Pertinence du Contenu par rapport à vos besoins :",
-            "Clarté et Organisation du Contenu :",
-            "Qualité des Supports de Formation (pdf, diapositives, etc.) :",
-            "Utilité des Supports de Formation pour l'apprentissage :",
-            "Compétence et Professionnalisme du Formateur :",
-            "Clarté des explications du Formateur :",
-            "Capacité du Formateur à répondre aux questions :",
-            "Interactivité et Dynamisme du Formateur :",
-            "Si vous êtes une personne en situation de handicap, êtes-vous satisfait de l’accompagnement et de l’adaptation éventuelle de la formation ? "
-        ]):
-            # Si on détecte un nouveau bloc, on traite l'ancien
-            if bloc_satisfaction:
-                traiter_bloc_satisfaction(bloc_satisfaction)
-                bloc_satisfaction = []
-        
-        # Détection des checkboxs de satisfaction
-        if "{{checkbox}}" in para.text:
-            bloc_satisfaction.append(para)
-    
-    # Traitement du dernier bloc
-    if bloc_satisfaction:
-        traiter_bloc_satisfaction(bloc_satisfaction)
 
     # Génération du nom de fichier
     safe_prenom = re.sub(r'[^a-zA-Z0-9]', '_', str(participant['prénom']))
@@ -159,14 +103,14 @@ if excel_file and template_file:
                             st.warning(f"⚠️ Échec pour {row['prénom']} {row['nom']} : {str(e)}")
                             continue
 
-                    with open(zip_path, "rb") as f:
-                        st.success("✅ Génération terminée avec succès !")
-                        st.download_button(
-                            "📥 Télécharger les questionnaires",
-                            data=f,
-                            file_name="Questionnaires_Satisfaction.zip",
-                            mime="application/zip"
-                        )
+                with open(zip_path, "rb") as f:
+                    st.success("✅ Génération terminée avec succès !")
+                    st.download_button(
+                        "📥 Télécharger les questionnaires",
+                        data=f,
+                        file_name="Questionnaires_Satisfaction.zip",
+                        mime="application/zip"
+                    )
 
     except Exception as e:
         st.error(f"❌ Erreur lors de la génération : {str(e)}")
