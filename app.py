@@ -14,7 +14,6 @@ st.title("Générateur de Questionnaires de Satisfaction à Chaud")
 REQUIRED_COLS = ['nom', 'prénom', 'email', 'session', 'formation']
 
 def remplacer_placeholders(paragraph, replacements):
-    """Remplace les placeholders dans un paragraphe"""
     if not paragraph.text:
         return
     original_text = paragraph.text
