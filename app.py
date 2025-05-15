@@ -137,7 +137,7 @@ with col2:
 
 st.markdown("### Étape 2: Options avancées")
 generer_ia = st.checkbox("Générer automatiquement un commentaire IA (points forts de la formation)")
-openrouter_api_key = "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"
+openrouter_api_key = ""
 if generer_ia:
     openrouter_api_key = st.text_input("Clé API OpenRouter (https://openrouter.ai/)", type="password")
 
