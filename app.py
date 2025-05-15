@@ -5,6 +5,7 @@ from docx import Document
 import os
 import tempfile
 from zipfile import ZipFile
+import re
 
 st.set_page_config(page_title="Générateur de Questionnaires", layout="wide")
 st.title("Générateur de Questionnaires de Satisfaction à Chaud")
