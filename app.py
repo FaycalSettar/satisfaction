@@ -7,6 +7,7 @@ from zipfile import ZipFile
 import re
 import random
 import requests
+import shutil
 
 st.set_page_config(page_title="Générateur de Questionnaires", layout="wide")
 st.title("Générateur de Questionnaires de Satisfaction à Chaud")
@@ -36,7 +37,7 @@ def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
         "Génère un commentaire court et naturel dans ce style, sans intro ni fioriture."
     )
     data = {
-        "model": "openai/gpt-4o",  # Vous pouvez changer le modèle si besoin
+        "model": "openai/gpt-4o",  # modèle OpenRouter valide
         "messages": [
             {"role": "user", "content": prompt}
         ]
@@ -153,9 +154,10 @@ if excel_file and template_file:
 
         if st.button("Générer les questionnaires", type="primary"):
             with tempfile.TemporaryDirectory() as tmpdir:
-                template_path = os.path.join(tmpdir, "template.docx")
-                with open(template_path, "wb") as f:
-                    f.write(template_file.getbuffer())
+                # Sauvegarde du modèle Word dans un fichier temporaire
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".docx") as tmp_word:
+                    shutil.copyfileobj(template_file, tmp_word)
+                    template_path = tmp_word.name
 
                 zip_path = os.path.join(tmpdir, "Questionnaires.zip")
 
@@ -188,4 +190,3 @@ if excel_file and template_file:
 
     except Exception as e:
         st.error(f"❌ Erreur lors de la génération : {str(e)}")
-
