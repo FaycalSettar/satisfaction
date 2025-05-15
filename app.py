@@ -38,7 +38,7 @@ def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
     }
     
     prompt = (
-        f"Génère 3 points forts très courts (3-5 mots chacun) pour une formation en {formation}, "
+        f" tu es un apprenant qui vient de réaliser une foormation en {formation} génère une phrase courte pour décrire ton ressenti concernant les points forts de cette formation  "
         "sans numérotation, séparés par des tirets. Exemple : "
         "\"explications claires - formation pratique - supports concrets\""
     )
