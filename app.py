@@ -36,7 +36,7 @@ def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
         "Génère un commentaire court et naturel dans ce style, sans intro ni fioriture."
     )
     data = {
-        "model": "openai/gpt-4o",  # Vous pouvez changer le modèle si besoin
+        "model": "openai/gpt-4.1",  # Vous pouvez changer le modèle si besoin
         "messages": [
             {"role": "user", "content": prompt}
         ]
