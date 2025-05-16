@@ -39,7 +39,14 @@ def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
     
     prompt = (
         f" tu es un apprenant qui vient de réaliser une foormation en {formation} génère une phrase courte pour décrire ton ressenti concernant les points forts de cette formation voici 
-        quelques exemples inspire toi dessus : 1-explications claires et outils2-Formation pratico pratique. On en ressort avec un système en place qui fonctionne3-Une formation vraiment au top, je suis ressorti avec pleins de tips4-Le contenu, les supports5-Le formateur est très pédagogue et maîtrise parfaitement le sujet. Le fait d'être en petit comité est très appréciable.6-Ouvert à tous et simple dʼutilisation. Résultats concrets7-La recherche Boléenne8-Les cours qui sont sous format numérique et interactif que l'on peut consulter à la demande.9-formateur pédagogue prends son temps10-gestion de dossier admin tout est ok en plus de la formationréponse en quelques mots"
+        quelques exemples inspire toi dessus : 
+        1-explications claires et outils
+        2-Formation pratico pratique. On en ressort avec un système en place qui fonctionne
+        3-Une formation vraiment au top, je suis ressorti avec pleins de tips
+        4-Le contenu, les supports
+        5-Le formateur est très pédagogue et maîtrise parfaitement le sujet. Le fait d'être en petit comité est très appréciable.
+        6-Ouvert à tous et simple dʼutilisation. Résultats concrets7-La recherche Boléenne8-Les cours qui sont sous format numérique et interactif que l'on peut consulter à la demande.
+        9-formateur pédagogue prends son temps10-gestion de dossier admin tout est ok en plus de la formationréponse en quelques mots"
     )
     
     data = {
