@@ -38,8 +38,8 @@ def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
     }
     
     prompt = (
-        f""" tu es un apprenant qui vient de réaliser une foormation en {formation} génère une phrase courte pour décrire ton ressenti concernant les points forts de cette formation voici 
-        quelques exemples inspire toi dessus ne commence pas ta phrase toujours avec la même accroche et surtout soit aléatoire des fois tu peux répondre par quelques mots et soit le plus humain possible : 
+        f""" ne commence pas ta phrase toujours avec la même accroche et surtout soit aléatoire des fois tu peux répondre par quelques mots et soit le plus humain possible tu es un apprenant qui vient de réaliser une formation en {formation} génère une phrase courte pour décrire ton ressenti concernant les points forts de cette formation voici 
+        quelques exemples inspire toi dessus  : 
         1-explications claires et outils
         2-Formation pratico pratique. On en ressort avec un système en place qui fonctionne
         3-Une formation vraiment au top, je suis ressorti avec pleins de tips
