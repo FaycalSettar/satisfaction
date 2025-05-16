@@ -28,40 +28,47 @@ def remplacer_placeholders(paragraph, replacements):
                     run.text = run.text.replace(key, value)
 
 def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
-    """Génère un commentaire IA via OpenRouter"""
+    """Génère un commentaire IA via OpenRouter, en choisissant aléatoirement parmi plusieurs options"""
     url = "https://openrouter.ai/api/v1/chat/completions"
     headers = {
         "Authorization": f"Bearer {openrouter_api_key}",
-        "HTTP-Referer": "https://formation-entreprise.com ",
+        "HTTP-Referer": "https://formation-entreprise.com",
         "X-Title": "Générateur Questionnaires",
         "Content-Type": "application/json"
     }
-    
     prompt = (
-        f""" ne commence pas ta phrase toujours avec la même accroche et surtout soit aléatoire des fois tu peux répondre par quelques mots des fois avec un peu plus mais reste court et soit le plus humain possible tu es un apprenant qui vient de réaliser une formation en {formation} génère une phrase courte pour décrire ton ressenti concernant les points forts de cette formation voici 
+        f"""
+        ne commence pas ta phrase toujours avec la même accroche et surtout soit aléatoire des fois tu peux répondre par quelques mots des fois avec un peu plus mais reste court et soit le plus humain possible tu es un apprenant qui vient de réaliser une formation en {formation} génère une phrase courte pour décrire ton ressenti concernant les points forts de cette formation voici 
         quelques exemples inspire toi dessus  de commentaire: 
         1-explications claires et outils
         2-Formation pratico pratique. On en ressort avec un système en place qui fonctionne
         3-Une formation vraiment au top, je suis ressorti avec pleins de tips
         4-Le contenu, les supports
         5-Le formateur est très pédagogue et maîtrise parfaitement le sujet. Le fait d'être en petit comité est très appréciable.
-        6-Ouvert à tous et simple dʼutilisation. Résultats concrets7-La recherche Boléenne8-Les cours qui sont sous format numérique et interactif que l'on peut consulter à la demande.
-        9-formateur pédagogue prends son temps10-gestion de dossier admin tout est ok en plus de la formationréponse en quelques mots"""
+        6-Ouvert à tous et simple d’utilisation. Résultats concrets
+        7-La recherche Boléenne
+        8-Les cours qui sont sous format numérique et interactif que l'on peut consulter à la demande.
+        9-formateur pédagogue prends son temps
+        10-gestion de dossier admin tout est ok en plus de la formation
+        réponse en quelques mots
+        """
     )
-    
     data = {
         "model": "openai/gpt-4.1",
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.5,
-        "max_tokens": 50
+        "max_tokens": 100
     }
-    
     try:
         response = requests.post(url, headers=headers, json=data, timeout=10)
         response.raise_for_status()
-        return response.json()['choices'][0]['message']['content'].strip()
+        raw = response.json()['choices'][0]['message']['content'].strip()
+        # Split en lignes, on filtre les vides
+        options = [ligne.strip() for ligne in raw.splitlines() if ligne.strip()]
+        # Retourne un commentaire aléatoire
+        return random.choice(options) if options else ""
     except Exception as e:
-        st.error(f"Erreur API : {str(e)}")
+        st.error(f"Erreur API IA : {e}")
         return ""
 
 def generer_questionnaire(participant, template_path, commentaire_ia=None):
@@ -117,14 +124,11 @@ def generer_questionnaire(participant, template_path, commentaire_ia=None):
             clean_option = option_text.split(']')[-1].strip().lower()
 
             if current_section == 'formation':
-                is_selected = formation_choice == clean_option
-                symbol = '☑' if is_selected else '☐'
+                symbol = '☑' if formation_choice == clean_option else '☐'
             elif current_section == 'satisfaction':
-                is_selected = answer.lower() == clean_option
-                symbol = '☑' if is_selected else '☐'
+                symbol = '☑' if answer.lower() == clean_option else '☐'
             elif current_section == 'handicap':
-                is_selected = 'non concerné' in clean_option
-                symbol = '☑' if is_selected else '☐'
+                symbol = '☑' if 'non concerné' in clean_option else '☐'
             else:
                 symbol = '☐'
 
