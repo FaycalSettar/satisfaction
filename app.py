@@ -38,7 +38,8 @@ def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
     }
     
     prompt = (
-        f" tu es un apprenant qui vient de réaliser une foormation en {formation} génère une phrase courte pour décrire ton ressenti concernant les points forts de cette formation  "
+        f" tu es un apprenant qui vient de réaliser une foormation en {formation} génère une phrase courte pour décrire ton ressenti concernant les points forts de cette formation voici 
+        quelques exemples inspire toi dessus : 1-explications claires et outils2-Formation pratico pratique. On en ressort avec un système en place qui fonctionne3-Une formation vraiment au top, je suis ressorti avec pleins de tips4-Le contenu, les supports5-Le formateur est très pédagogue et maîtrise parfaitement le sujet. Le fait d'être en petit comité est très appréciable.6-Ouvert à tous et simple dʼutilisation. Résultats concrets7-La recherche Boléenne8-Les cours qui sont sous format numérique et interactif que l'on peut consulter à la demande.9-formateur pédagogue prends son temps10-gestion de dossier admin tout est ok en plus de la formationréponse en quelques mots"
     )
     
     data = {
@@ -147,7 +148,6 @@ generer_ia = st.checkbox("Activer la génération de commentaires IA (nécessite
 openrouter_api_key = ""
 if generer_ia:
     openrouter_api_key = st.text_input("Clé API OpenRouter", type="password")
-    st.markdown("[Obtenir une clé API](https://openrouter.ai/keys )")
 
 if excel_file and template_file:
     try:
