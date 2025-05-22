@@ -38,7 +38,7 @@ def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
     }
     prompt = (
         f"""        
-        ne commence pas ta phrase toujours avec la même accroche propose des réponses avec des phrases plus complète et soit le plus humain possible tu es un apprenant qui vient de réaliser une formation en {formation} pour décrire ton ressenti concernant les points forts de cette formation voici quelques exemples inspire toi dessus  de commentaire ci dessous, le but c'est d'avoir des commentaires humanisés pour que si en cas de contrôle on se dise c'est un humain qui a écrit ça:
+        ne commence pas ta phrase toujours avec la même accroche propose des réponses avec des phrases plus complète et soit le plus humain possible tu es un apprenant qui vient de réaliser une formation en {formation} pour décrire ton ressenti concernant les points forts de cette formation voici quelques exemples inspire toi dessus et change toujours l'accroche et le sens de la première proposition
         Explications claires et outils
         Formation pratico pratique. On en ressort avec un système en place qui fonctionne
         Une formation vraiment au top, je suis ressorti avec pleins de tips
