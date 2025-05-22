@@ -38,7 +38,7 @@ def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
     }
     prompt = (
         f"""        
-        ne commence pas ta phrase toujours avec la même accroche propose des réponses avec des phrases plus complète et soit le plus humain possible tu es un apprenant qui vient de réaliser une formation en {formation} pour décrire ton ressenti concernant les points forts de cette formation voici quelques exemples inspire toi dessus et change toujours l'accroche et le sens de la première proposition commence ta phrase directement sans chiffre ou caractère
+        ne commence pas ta phrase toujours avec la même accroche propose des réponses avec des phrases plus complète et soit le plus humain possible tu es un apprenant qui vient de réaliser une formation en {formation} pour décrire ton ressenti concernant les points forts de cette formation voici quelques exemples inspire toi dessus et change toujours l'accroche et le sens de la première proposition commence ta phrase directement sans chiffre ou caractère et soit le plus aléatoire sur la première proposition
         1-Explications claires et outils
         2-Formation pratico pratique. On en ressort avec un système en place qui fonctionne
         3-Une formation vraiment au top, je suis ressorti avec pleins de tips
