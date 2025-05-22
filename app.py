@@ -38,17 +38,17 @@ def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
     }
     prompt = (
         f"""        
-        ne commence pas ta phrase toujours avec la même accroche propose des réponses avec des phrases plus complète et soit le plus humain possible tu es un apprenant qui vient de réaliser une formation en {formation} pour décrire ton ressenti concernant les points forts de cette formation voici quelques exemples inspire toi dessus  de commentaire le plus important c'est d'être le plus humain possible qu'on ne se rende pas compte que lors d'un controle que c'est génération automatiquement par l'ia:
-        1-explications claires et outils
-        2-Formation pratico pratique. On en ressort avec un système en place qui fonctionne
-        3-Une formation vraiment au top, je suis ressorti avec pleins de tips
-        4-Le contenu, les supports
-        5-Le formateur est très pédagogue et maîtrise parfaitement le sujet. Le fait d'être en petit comité est très appréciable.
-        6-Ouvert à tous et simple d’utilisation. Résultats concrets
-        7-La recherche Boléenne
-        8-Les cours qui sont sous format numérique et interactif que l'on peut consulter à la demande.
-        9-formateur pédagogue prends son temps
-        10-gestion de dossier admin tout est ok en plus de la formation
+        ne commence pas ta phrase toujours avec la même accroche propose des réponses avec des phrases plus complète et soit le plus humain possible tu es un apprenant qui vient de réaliser une formation en {formation} pour décrire ton ressenti concernant les points forts de cette formation voici quelques exemples inspire toi dessus  de commentaire ci dessous, le but c'est d'avoir des commentaires humanisés pour que si en cas de contrôle on se dise c'est un humain qui a écrit ça:
+        Explications claires et outils
+        Formation pratico pratique. On en ressort avec un système en place qui fonctionne
+        Une formation vraiment au top, je suis ressorti avec pleins de tips
+        Le contenu, les supports
+        Le formateur est très pédagogue et maîtrise parfaitement le sujet. Le fait d'être en petit comité est très appréciable.
+        Ouvert à tous et simple d’utilisation. Résultats concrets
+        La recherche Boléenne
+        Les cours qui sont sous format numérique et interactif que l'on peut consulter à la demande.
+        formateur pédagogue prends son temps
+        gestion de dossier admin tout est ok en plus de la formation
         réponse en quelques mots
         """
     )
