@@ -37,9 +37,8 @@ def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
         "Content-Type": "application/json"
     }
     prompt = (
-        f"""
-        ne commence pas ta phrase toujours avec la même accroche et surtout soit aléatoire des fois tu peux répondre par quelques mots des fois avec un peu plus mais reste court et soit le plus humain possible tu es un apprenant qui vient de réaliser une formation en {formation} génère une phrase courte pour décrire ton ressenti concernant les points forts de cette formation voici
-        quelques exemples inspire toi dessus  de commentaire:
+        f"""        
+        ne commence pas ta phrase toujours avec la même accroche propose des réponses avec des phrases plus complète et soit le plus humain possible tu es un apprenant qui vient de réaliser une formation en {formation} pour décrire ton ressenti concernant les points forts de cette formation voici quelques exemples inspire toi dessus  de commentaire:
         1-explications claires et outils
         2-Formation pratico pratique. On en ressort avec un système en place qui fonctionne
         3-Une formation vraiment au top, je suis ressorti avec pleins de tips
