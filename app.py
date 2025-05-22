@@ -14,7 +14,7 @@ st.set_page_config(page_title="Générateur de Questionnaires", layout="wide")
 st.title("Générateur de Questionnaires de Satisfaction à Chaud")
 
 # Colonnes requises dans le fichier Excel
-REQUIRED_COLS = ['nom', 'prénom', 'email', 'session', 'formation']
+REQUIRED_COLS = ['nom', 'prénom', 'email', 'session', 'formation', 'formateur']
 
 def remplacer_placeholders(paragraph, replacements):
     """Remplace les placeholders dans un paragraphe Word"""
@@ -79,7 +79,7 @@ def generer_questionnaire(participant, template_path, commentaire_ia=None):
         "{{email}}": str(participant['email']),
         "{{ref_session}}": str(participant['session']),
         "{{formation}}": str(participant['formation']),
-        "{{formateur}}": "Jean Dupont",
+        "{{formateur}}": str(participant['formateur']),
         "{{commentaire_points_forts}}": commentaire_ia or "",
     }
 
