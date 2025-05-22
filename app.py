@@ -37,25 +37,29 @@ def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
         "Content-Type": "application/json"
     }
     prompt = (
-        f"""        
-        ne commence pas ta phrase toujours avec la même accroche propose des réponses avec des phrases plus complète et soit le plus humain possible tu es un apprenant qui vient de réaliser une formation en {formation} pour décrire ton ressenti concernant les points forts de cette formation voici quelques exemples inspire toi dessus et change toujours l'accroche et le sens de la première proposition commence ta phrase directement sans chiffre ou caractère et soit le plus aléatoire sur la première proposition
-        1-Explications claires et outils
-        2-Formation pratico pratique. On en ressort avec un système en place qui fonctionne
-        3-Une formation vraiment au top, je suis ressorti avec pleins de tips
-        4-Le contenu, les supports
-        5-Le formateur est très pédagogue et maîtrise parfaitement le sujet. Le fait d'être en petit comité est très appréciable.
-        6-Ouvert à tous et simple d’utilisation. Résultats concrets
-        7-La recherche Boléenne
-        8-Les cours qui sont sous format numérique et interactif que l'on peut consulter à la demande.
-        9-formateur pédagogue prends son temps
-        10-gestion de dossier admin tout est ok en plus de la formation
-        réponse en quelques mots
-        """
+        f"""
+    Tu es un assistant qui génère des commentaires de satisfaction pour des formations.
+    Génère UNIQUEMENT des phrases courtes et complètes qui :
+    - Commencent directement par un substantif ou un adjectif
+    - Mentionnent un aspect spécifique de la formation
+    - Contiennent entre 5 et 8 mots maximum
+    - Utilisent un langage naturel et enthousiaste
+    
+    Formation concernée : {formation}
+    
+    Exemples de bonnes réponses :
+    - Pédagogie adaptée aux besoins professionnels
+    - Contenu clair et immédiatement applicable
+    - Alternance parfaite théorie/pratique
+    - Supports complets et bien organisés
+    
+    Génère 5 propositions différentes selon ces consignes.
+    """
     )
     data = {
         "model": "openai/gpt-4.1",
         "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.5,
+        "temperature": 0.3,
         "max_tokens": 100
     }
     try:
