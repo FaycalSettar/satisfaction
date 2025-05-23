@@ -106,7 +106,7 @@ def traiter_checkbox(paragraph, formation_choice, current_section):
     checkbox = parse_xml(
         f'<w:sdt xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
         f'<w:sdtPr><w:checkbox>'
-        f'<w:checked>{'1' if selected else '0'}</w:checked>'
+        f'<w:checked>{"1" if selected else "0"}</w:checked>' 
         f'</w:checkbox></w:sdtPr>'
         f'<w:sdtContent><w:r><w:t>{"☑" if selected else "☐"}</w:t></w:r></w:sdtContent>'
         f'</w:sdt>'
