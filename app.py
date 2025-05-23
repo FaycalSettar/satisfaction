@@ -53,7 +53,7 @@ Ta réponse doit être 100 % humaine, spontanée et fluide. Une seule phrase. Pa
 
 Ta réponse peut contenir une appréciation générale, une suggestion, un ressenti, une émotion ou une remarque libre. Tu peux être personnel, tant que tu restes positif ou constructif.
 
-\u26a0\ufe0f Important :
+⚠️ Important :
 - Ne commence pas par un numéro, un tiret ou une liste
 - Ne fais pas de mise en forme (pas de gras, italique, etc.)
 - Ne retourne qu'une seule phrase courte, humaine, naturelle"""
@@ -104,34 +104,33 @@ def generer_questionnaire(participant, template_path, commentaire_ia=None, comme
             current_section = 'formation'
             continue
         elif any(keyword in text for keyword in [
-            'evaluation de la formation', 'qualite du contenu',
-            'pertinence du contenu', 'clarte et organisation',
-            'qualite des supports', 'utilite des supports',
-            'competence et professionnalisme', 'clarte des explications',
-            'capacite a repondre', 'interactivite et dynamisme', 'globalement']):
+            'évaluation de la formation', 'qualité du contenu',
+            'pertinence du contenu', 'clarté et organisation',
+            'qualité des supports', 'utilité des supports',
+            'compétence et professionnalisme', 'clarté des explications',
+            'capacité à répondre', 'interactivité et dynamisme', 'globalement']):
             current_section = 'satisfaction'
-            answer = random.choice(['Tres satisfait', 'Satisfait'])
+            answer = random.choice(['Très satisfait', 'Satisfait'])
             continue
         elif 'handicap' in text:
             current_section = 'handicap'
-            answer = 'Non concerne'
+            answer = 'Non concerné'
             continue
 
-        if '{{checkbox}}' in para.text:
-            option_text = para.text.replace('{{checkbox}}', '').strip()
-            clean_option = option_text.split(']')[-1].strip().lower()
+        if '☐' in para.text or '☑' in para.text:
+            raw_text = para.text.strip()
+            option = raw_text.replace('☐', '').replace('☑', '').strip().lower()
 
             if current_section == 'formation':
-                symbol = '☑' if formation_choice == clean_option else '☐'
+                symbol = '☑' if formation_choice in option else '☐'
             elif current_section == 'satisfaction':
-                symbol = '☑' if answer.lower() == clean_option else '☐'
+                symbol = '☑' if option == answer.lower() else '☐'
             elif current_section == 'handicap':
-                symbol = '☑' if 'non concerne' in clean_option else '☐'
+                symbol = '☑' if 'non concerné' in option else '☐'
             else:
                 symbol = '☐'
 
-            original_text = option_text.split('[')[-1].split(']')[0].strip()
-            para.text = f'{symbol} {original_text}'
+            para.text = f"{symbol} {option.capitalize()}"
 
     safe_prenom = re.sub(r'[^a-zA-Z0-9]', '_', str(participant['prénom']))
     safe_nom = re.sub(r'[^a-zA-Z0-9]', '_', str(participant['nom']))
