@@ -49,7 +49,7 @@ Ta réponse doit être 100 % humaine, spontanée et fluide. Une seule phrase. Pa
     )
 
     prompt_remarques = (
-        f"""Tu viens de terminer une formation en {formation}. Rédige une phrase spontanée, comme si tu laissais un commentaire libre à chaud sur ton ressenti général ou un point que tu voudrais partager.
+        f"""Tu viens de terminer une formation en {formation}. Rédige une phrase spontanée, comme si tu laissais un commentaire libre à chaud sur ton ressenti général ou un point que tu voudrais partager, évite de commencer ta phrase par Je mais soit le plus aléatoire possible dans le début de la phrase.
 
 Ta réponse peut contenir une appréciation générale, une suggestion, un ressenti, une émotion ou une remarque libre. Tu peux être personnel, tant que tu restes positif ou constructif.
 
