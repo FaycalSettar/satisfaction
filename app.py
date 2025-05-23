@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from docx import Document  # Nécessite l'installation de python-docx
+from docx import Document
 import os
 import tempfile
 from zipfile import ZipFile
@@ -9,15 +9,12 @@ import random
 import requests
 import shutil
 
-# Configuration de la page
 st.set_page_config(page_title="Générateur de Questionnaires", layout="wide")
 st.title("Générateur de Questionnaires de Satisfaction à Chaud")
 
-# Colonnes requises dans le fichier Excel
 REQUIRED_COLS = ['nom', 'prénom', 'email', 'session', 'formation', 'formateur']
 
 def remplacer_placeholders(paragraph, replacements):
-    """Remplace les placeholders dans un paragraphe Word"""
     if not paragraph.text:
         return
     original_text = paragraph.text
@@ -28,7 +25,6 @@ def remplacer_placeholders(paragraph, replacements):
                     run.text = run.text.replace(key, value)
 
 def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
-    """Génère un commentaire IA via OpenRouter, en choisissant aléatoirement parmi plusieurs options"""
     url = "https://openrouter.ai/api/v1/chat/completions"
     headers = {
         "Authorization": f"Bearer {openrouter_api_key}",
@@ -38,18 +34,17 @@ def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
     }
     prompt = (
         f"""        
-        ne commence pas ta phrase toujours avec la même accroche propose des réponses avec des phrases plus complète et soit le plus humain possible tu es un apprenant qui vient de réaliser une formation en {formation} pour décrire ton ressenti concernant les points forts de cette formation voici quelques exemples inspire toi dessus et change toujours l'accroche et le sens de la première proposition commence ta phrase directement sans chiffre ou caractère et soit le plus aléatoire sur la première proposition
+        ne commence pas ta phrase toujours avec la même accroche propose des phrases plus complètes et humaines. Tu es un apprenant venant de terminer une formation en {formation}. Inspire-toi des exemples suivants, mais change toujours l'accroche :
         1-Explications claires et outils
-        2-Formation pratico pratique. On en ressort avec un système en place qui fonctionne
-        3-Une formation vraiment au top, je suis ressorti avec pleins de tips
+        2-Formation pratico pratique
+        3-Une formation vraiment au top
         4-Le contenu, les supports
-        5-Le formateur est très pédagogue et maîtrise parfaitement le sujet. Le fait d'être en petit comité est très appréciable.
-        6-Ouvert à tous et simple d’utilisation. Résultats concrets
+        5-Le formateur très pédagogue
+        6-Ouvert à tous, simple d’utilisation
         7-La recherche Boléenne
-        8-Les cours qui sont sous format numérique et interactif que l'on peut consulter à la demande.
-        9-formateur pédagogue prends son temps
-        10-gestion de dossier admin tout est ok en plus de la formation
-        réponse en quelques mots
+        8-Cours numériques interactifs à la demande
+        9-Le formateur prend son temps
+        10-Gestion de dossier admin ok
         """
     )
     data = {
@@ -62,9 +57,7 @@ def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
         response = requests.post(url, headers=headers, json=data, timeout=10)
         response.raise_for_status()
         raw = response.json()['choices'][0]['message']['content'].strip()
-        # Split en lignes, on filtre les vides
         options = [ligne.strip() for ligne in raw.splitlines() if ligne.strip()]
-        # Retourne un commentaire aléatoire
         return random.choice(options) if options else ""
     except Exception as e:
         st.error(f"Erreur API IA : {e}")
@@ -72,7 +65,6 @@ def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
 
 def generer_questionnaire(participant, template_path, commentaire_ia=None):
     doc = Document(template_path)
-
     replacements = {
         "{{nom}}": str(participant['nom']),
         "{{prenom}}": str(participant['prénom']),
@@ -89,26 +81,16 @@ def generer_questionnaire(participant, template_path, commentaire_ia=None):
 
     for para in doc.paragraphs:
         remplacer_placeholders(para, replacements)
-
         text = para.text.lower()
-       
-        # Détection des sections
         if 'formation suivie' in text:
             current_section = 'formation'
             continue
         elif any(keyword in text for keyword in [
-            'évaluation de la formation',
-            'qualité du contenu',
-            'pertinence du contenu',
-            'clarté et organisation',
-            'qualité des supports',
-            'utilité des supports',
-            'compétence et professionnalisme',
-            'clarté des explications',
-            'capacité à répondre',
-            'interactivité et dynamisme',
-            'globalement'
-        ]):
+            'évaluation de la formation', 'qualité du contenu',
+            'pertinence du contenu', 'clarté et organisation',
+            'qualité des supports', 'utilité des supports',
+            'compétence et professionnalisme', 'clarté des explications',
+            'capacité à répondre', 'interactivité et dynamisme', 'globalement']):
             current_section = 'satisfaction'
             answer = random.choice(['Très satisfait', 'Satisfait'])
             continue
@@ -117,7 +99,6 @@ def generer_questionnaire(participant, template_path, commentaire_ia=None):
             answer = 'Non concerné'
             continue
 
-        # Traitement des checkboxes
         if '{{checkbox}}' in para.text:
             option_text = para.text.replace('{{checkbox}}', '').strip()
             clean_option = option_text.split(']')[-1].strip().lower()
@@ -134,14 +115,11 @@ def generer_questionnaire(participant, template_path, commentaire_ia=None):
             original_text = option_text.split('[')[-1].split(']')[0].strip()
             para.text = f'{symbol} {original_text}'
 
-    # Nom du fichier
     safe_prenom = re.sub(r'[^a-zA-Z0-9]', '_', str(participant['prénom']))
     safe_nom = re.sub(r'[^a-zA-Z0-9]', '_', str(participant['nom']))
     filename = f"Questionnaire_{safe_prenom}_{safe_nom}_{participant['session']}.docx"
-   
     output_path = os.path.join(tempfile.gettempdir(), filename)
     doc.save(output_path)
-   
     return output_path
 
 # Interface utilisateur
@@ -156,13 +134,15 @@ with col2:
 st.markdown("### Étape 2: Configuration IA")
 generer_ia = st.checkbox("Activer la génération de commentaires IA (nécessite clé API)")
 openrouter_api_key = ""
+frequence_ia = 1
+
 if generer_ia:
     openrouter_api_key = st.text_input("Clé API OpenRouter", type="password")
+    frequence_ia = st.slider("Fréquence de génération IA (1 sur x participants)", min_value=1, max_value=10, value=4, step=1)
 
 if excel_file and template_file:
     try:
         df = pd.read_excel(excel_file)
-
         if not all(col in df.columns for col in REQUIRED_COLS):
             st.error(f"❌ Colonnes requises manquantes : {', '.join(REQUIRED_COLS)}")
             st.stop()
@@ -180,15 +160,13 @@ if excel_file and template_file:
 
                 with ZipFile(zip_path, 'w') as zipf:
                     progress_bar = st.progress(0)
-                   
                     for idx, row in df.iterrows():
                         commentaire = None
-                        if generer_ia and openrouter_api_key:
+                        if generer_ia and openrouter_api_key and idx % frequence_ia == 0:
                             try:
                                 commentaire = generer_commentaire_ia(openrouter_api_key, row['formation'])
                             except Exception as e:
                                 st.warning(f"⚠️ Erreur IA pour {row['prénom']} : {str(e)}")
-                       
                         try:
                             output_path = generer_questionnaire(row, template_path, commentaire)
                             zipf.write(output_path, os.path.basename(output_path))
@@ -205,6 +183,5 @@ if excel_file and template_file:
                         file_name="Questionnaires_Satisfaction.zip",
                         mime="application/zip"
                     )
-
     except Exception as e:
         st.error(f"🚨 Erreur critique : {str(e)}")
