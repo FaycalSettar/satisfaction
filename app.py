@@ -33,7 +33,7 @@ def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
     }
 
     prompt_points_forts = (
-        f"""Tu viens de suivre une formation en {formation}. Rédige une seule phrase courte et naturelle pour décrire ton ressenti. N'utilise aucune liste, numéro, puce, tiret, ou mise en forme Markdown (comme **gras** ou *italique*). Ne commence pas par \"1.\", \"2.\", \"-\", ou autre symbole. Ne donne qu’une phrase, sans retour à la ligne.
+        f"""Tu viens de suivre une formation en {formation}. Rédige une seule phrase courte et naturelle pour décrire ton ressenti. N'utilise aucune liste, numéro, puce, tiret, ou mise en forme Markdown (comme **gras** ou *italique*). Ne commence pas par \"1.\", \"2.\", \"-\", ou autre symbole. Ne donne qu’une phrase, sans retour à la ligne et évite de commencer ta phrase par Je mais soit le plus aléatoire possible base toi sur les exemples que je t'ai donné ci dessous.
 
 Inspire-toi librement des idées suivantes (mais sans les reprendre telles quelles) :
 Explications claires et outils
@@ -45,13 +45,13 @@ Supports bien structurés
 On repart avec un système clé en main
 Résultats concrets dès la fin de la session
 
-Ta réponse doit être 100 % humaine, spontanée et fluide. Une seule phrase. Pas de formatage. Pas de liste. Juste un ressenti authentique. Propose 15 réponses."""
+Ta réponse doit être 100 % humaine, spontanée et fluide. Une seule phrase. Pas de formatage. Pas de liste. Juste un ressenti authentique."""
     )
 
     prompt_remarques = (
         f"""Tu viens de terminer une formation en {formation}. Rédige une phrase spontanée, comme si tu laissais un commentaire libre à chaud sur ton ressenti général ou un point que tu voudrais partager.
 
-Ta réponse peut contenir une appréciation générale, une suggestion, un ressenti, une émotion ou une remarque libre. Tu peux être personnel, tant que tu restes positif ou constructif. Propose 15 réponses.
+Ta réponse peut contenir une appréciation générale, une suggestion, un ressenti, une émotion ou une remarque libre. Tu peux être personnel, tant que tu restes positif ou constructif.
 
 ⚠️ Important :
 - Des fois tu peux commencer par un Je et des fois par des adjectif soit aléatoire entre le choix des deux
