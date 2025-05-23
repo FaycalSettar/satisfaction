@@ -100,6 +100,7 @@ def generer_questionnaire(participant, template_path, commentaire_ia=None, comme
     for para in doc.paragraphs:
         remplacer_placeholders(para, replacements)
         text = para.text.lower()
+        
         if 'formation suivie' in text:
             current_section = 'formation'
             continue
@@ -118,19 +119,27 @@ def generer_questionnaire(participant, template_path, commentaire_ia=None, comme
             continue
 
         if '☐' in para.text or '☑' in para.text:
-            raw_text = para.text.strip()
-            option = raw_text.replace('☐', '').replace('☑', '').strip().lower()
+            for run in para.runs:
+                if '☐' in run.text or '☑' in run.text:
+                    raw_text = run.text.strip()
+                    option = raw_text.replace('☐', '').replace('☑', '').strip().lower()
 
-            if current_section == 'formation':
-                symbol = '☑' if formation_choice in option else '☐'
-            elif current_section == 'satisfaction':
-                symbol = '☑' if option == answer.lower() else '☐'
-            elif current_section == 'handicap':
-                symbol = '☑' if 'non concerné' in option else '☐'
-            else:
-                symbol = '☐'
+                    # Déterminer le symbole approprié
+                    if current_section == 'formation':
+                        symbol = '☑' if formation_choice in option else '☐'
+                    elif current_section == 'satisfaction':
+                        symbol = '☑' if option == answer.lower() else '☐'
+                    elif current_section == 'handicap':
+                        symbol = '☑' if 'non concerné' in option else '☐'
+                    else:
+                        symbol = '☐'
 
-            para.text = f"{symbol} {option.capitalize()}"
+                    # Mettre à jour le texte du run
+                    parts = re.split(r'(☐|☑)', run.text)
+                    if len(parts) >= 3:
+                        new_text = f"{symbol} {parts[2].strip().capitalize()}"
+                        run.text = new_text
+                    break  # Un seul remplacement par paragraphe
 
     safe_prenom = re.sub(r'[^a-zA-Z0-9]', '_', str(participant['prénom']))
     safe_nom = re.sub(r'[^a-zA-Z0-9]', '_', str(participant['nom']))
