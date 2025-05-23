@@ -54,6 +54,7 @@ Ta réponse doit être 100 % humaine, spontanée et fluide. Une seule phrase. Pa
 Ta réponse peut contenir une appréciation générale, une suggestion, un ressenti, une émotion ou une remarque libre. Tu peux être personnel, tant que tu restes positif ou constructif.
 
 ⚠️ Important :
+- Des fois tu peux commencer par un Je et des fois par des adjectif soit aléatoire entre le choix des deux
 - Ne commence pas par un numéro, un tiret ou une liste
 - Ne fais pas de mise en forme (pas de gras, italique, etc.)
 - Ne retourne qu'une seule phrase courte, humaine, naturelle"""
