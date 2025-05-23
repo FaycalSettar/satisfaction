@@ -82,6 +82,7 @@ Ta réponse peut contenir une appréciation générale, une suggestion, un resse
 
 def generer_questionnaire(participant, template_path, commentaire_ia=None, commentaire_remarques=None):
     doc = Document(template_path)
+
     replacements = {
         "{{nom}}": str(participant['nom']),
         "{{prenom}}": str(participant['prénom']),
@@ -99,17 +100,26 @@ def generer_questionnaire(participant, template_path, commentaire_ia=None, comme
 
     for para in doc.paragraphs:
         remplacer_placeholders(para, replacements)
+
         text = para.text.lower()
         
+        # Détection des sections
         if 'formation suivie' in text:
             current_section = 'formation'
             continue
         elif any(keyword in text for keyword in [
-            'évaluation de la formation', 'qualité du contenu',
-            'pertinence du contenu', 'clarté et organisation',
-            'qualité des supports', 'utilité des supports',
-            'compétence et professionnalisme', 'clarté des explications',
-            'capacité à répondre', 'interactivité et dynamisme', 'globalement']):
+            'évaluation de la formation',
+            'qualité du contenu',
+            'pertinence du contenu',
+            'clarté et organisation',
+            'qualité des supports',
+            'utilité des supports',
+            'compétence et professionnalisme',
+            'clarté des explications',
+            'capacité à répondre',
+            'interactivité et dynamisme',
+            'globalement'
+        ]):
             current_section = 'satisfaction'
             answer = random.choice(['Très satisfait', 'Satisfait'])
             continue
@@ -118,34 +128,31 @@ def generer_questionnaire(participant, template_path, commentaire_ia=None, comme
             answer = 'Non concerné'
             continue
 
-        if '☐' in para.text or '☑' in para.text:
-            for run in para.runs:
-                if '☐' in run.text or '☑' in run.text:
-                    raw_text = run.text.strip()
-                    option = raw_text.replace('☐', '').replace('☑', '').strip().lower()
+        # PARTIE CORRIGÉE : Méthode originale qui fonctionnait
+        if '{{checkbox}}' in para.text:
+            option_text = para.text.replace('{{checkbox}}', '').strip()
+            clean_option = option_text.split(']')[-1].strip().lower()
 
-                    # Déterminer le symbole approprié
-                    if current_section == 'formation':
-                        symbol = '☑' if formation_choice in option else '☐'
-                    elif current_section == 'satisfaction':
-                        symbol = '☑' if option == answer.lower() else '☐'
-                    elif current_section == 'handicap':
-                        symbol = '☑' if 'non concerné' in option else '☐'
-                    else:
-                        symbol = '☐'
+            if current_section == 'formation':
+                symbol = '☑' if formation_choice == clean_option else '☐'
+            elif current_section == 'satisfaction':
+                symbol = '☑' if answer.lower() == clean_option else '☐'
+            elif current_section == 'handicap':
+                symbol = '☑' if 'non concerné' in clean_option else '☐'
+            else:
+                symbol = '☐'
 
-                    # Mettre à jour le texte du run
-                    parts = re.split(r'(☐|☑)', run.text)
-                    if len(parts) >= 3:
-                        new_text = f"{symbol} {parts[2].strip().capitalize()}"
-                        run.text = new_text
-                    break  # Un seul remplacement par paragraphe
+            original_text = option_text.split('[')[-1].split(']')[0].strip()
+            para.text = f'{symbol} {original_text}'
 
+    # Nom du fichier
     safe_prenom = re.sub(r'[^a-zA-Z0-9]', '_', str(participant['prénom']))
-    safe_nom = re.sub(r'[^a-zA-Z0-9]', '_', str(participant['nom']))
+    safe_nom = re.sub(r'[^a-zA-Z0-9]_, str(participant['nom']))
     filename = f"Questionnaire_{safe_prenom}_{safe_nom}_{participant['session']}.docx"
+    
     output_path = os.path.join(tempfile.gettempdir(), filename)
     doc.save(output_path)
+    
     return output_path
 
 # Interface utilisateur
