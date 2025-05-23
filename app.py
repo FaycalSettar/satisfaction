@@ -128,7 +128,7 @@ def generer_questionnaire(participant, template_path, commentaire_ia=None, comme
             answer = 'Non concerné'
             continue
 
-        # PARTIE CORRIGÉE : Méthode originale qui fonctionnait
+        # Traitement des checkboxes
         if '{{checkbox}}' in para.text:
             option_text = para.text.replace('{{checkbox}}', '').strip()
             clean_option = option_text.split(']')[-1].strip().lower()
@@ -145,9 +145,8 @@ def generer_questionnaire(participant, template_path, commentaire_ia=None, comme
             original_text = option_text.split('[')[-1].split(']')[0].strip()
             para.text = f'{symbol} {original_text}'
 
-    # Nom du fichier
     safe_prenom = re.sub(r'[^a-zA-Z0-9]', '_', str(participant['prénom']))
-    safe_nom = re.sub(r'[^a-zA-Z0-9]_, str(participant['nom']))
+    safe_nom = re.sub(r'[^a-zA-Z0-9]', '_', str(participant['nom']))
     filename = f"Questionnaire_{safe_prenom}_{safe_nom}_{participant['session']}.docx"
     
     output_path = os.path.join(tempfile.gettempdir(), filename)
