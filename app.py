@@ -27,6 +27,7 @@ def remplacer_placeholders(paragraph, replacements):
                 if key in run.text:
                     run.text = run.text.replace(key, value)
 
+
 def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
     """Génère un commentaire IA via OpenRouter, en choisissant aléatoirement parmi plusieurs options"""
     url = "https://openrouter.ai/api/v1/chat/completions"
@@ -37,7 +38,7 @@ def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
         "Content-Type": "application/json"
     }
     prompt = (
-        f"""        
+        f"""
         ne commence pas ta phrase toujours avec la même accroche propose des réponses avec des phrases plus complète et soit le plus humain possible tu es un apprenant qui vient de réaliser une formation en {formation} pour décrire ton ressenti concernant les points forts de cette formation voici quelques exemples inspire toi dessus et change toujours l'accroche et le sens de la première proposition commence ta phrase directement sans chiffre ou caractère et soit le plus aléatoire sur la première proposition
         1-Explications claires et outils
         2-Formation pratico pratique. On en ressort avec un système en place qui fonctionne
@@ -62,17 +63,15 @@ def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
         response = requests.post(url, headers=headers, json=data, timeout=10)
         response.raise_for_status()
         raw = response.json()['choices'][0]['message']['content'].strip()
-        # Split en lignes, on filtre les vides
         options = [ligne.strip() for ligne in raw.splitlines() if ligne.strip()]
-        # Retourne un commentaire aléatoire
         return random.choice(options) if options else ""
     except Exception as e:
         st.error(f"Erreur API IA : {e}")
         return ""
 
-def generer_questionnaire(participant, template_path, commentaire_ia=None):
-    doc = Document(template_path)
 
+def generer_questionnaire(participant, template_path, commentaire_ia=None, commentaire_remarques=None):
+    doc = Document(template_path)
     replacements = {
         "{{nom}}": str(participant['nom']),
         "{{prenom}}": str(participant['prénom']),
@@ -81,73 +80,21 @@ def generer_questionnaire(participant, template_path, commentaire_ia=None):
         "{{formation}}": str(participant['formation']),
         "{{formateur}}": str(participant['formateur']),
         "{{commentaire_points_forts}}": commentaire_ia or "",
+        "{{commentaire_remarques}}": commentaire_remarques or "",
     }
-
-    current_section = None
-    formation_choice = str(participant['formation']).strip().lower()
-    answer = None
-
     for para in doc.paragraphs:
         remplacer_placeholders(para, replacements)
-
-        text = para.text.lower()
-       
-        # Détection des sections
-        if 'formation suivie' in text:
-            current_section = 'formation'
-            continue
-        elif any(keyword in text for keyword in [
-            'évaluation de la formation',
-            'qualité du contenu',
-            'pertinence du contenu',
-            'clarté et organisation',
-            'qualité des supports',
-            'utilité des supports',
-            'compétence et professionnalisme',
-            'clarté des explications',
-            'capacité à répondre',
-            'interactivité et dynamisme',
-            'globalement'
-        ]):
-            current_section = 'satisfaction'
-            answer = random.choice(['Très satisfait', 'Satisfait'])
-            continue
-        elif 'handicap' in text:
-            current_section = 'handicap'
-            answer = 'Non concerné'
-            continue
-
-        # Traitement des checkboxes
-        if '{{checkbox}}' in para.text:
-            option_text = para.text.replace('{{checkbox}}', '').strip()
-            clean_option = option_text.split(']')[-1].strip().lower()
-
-            if current_section == 'formation':
-                symbol = '☑' if formation_choice == clean_option else '☐'
-            elif current_section == 'satisfaction':
-                symbol = '☑' if answer.lower() == clean_option else '☐'
-            elif current_section == 'handicap':
-                symbol = '☑' if 'non concerné' in clean_option else '☐'
-            else:
-                symbol = '☐'
-
-            original_text = option_text.split('[')[-1].split(']')[0].strip()
-            para.text = f'{symbol} {original_text}'
-
     # Nom du fichier
     safe_prenom = re.sub(r'[^a-zA-Z0-9]', '_', str(participant['prénom']))
     safe_nom = re.sub(r'[^a-zA-Z0-9]', '_', str(participant['nom']))
     filename = f"Questionnaire_{safe_prenom}_{safe_nom}_{participant['session']}.docx"
-   
     output_path = os.path.join(tempfile.gettempdir(), filename)
     doc.save(output_path)
-   
     return output_path
 
 # Interface utilisateur
 st.markdown("### Étape 1: Importation des fichiers")
 col1, col2 = st.columns(2)
-
 with col1:
     excel_file = st.file_uploader("Fichier Excel des participants", type="xlsx")
 with col2:
@@ -155,18 +102,17 @@ with col2:
 
 st.markdown("### Étape 2: Configuration IA")
 generer_ia = st.checkbox("Activer la génération de commentaires IA (nécessite clé API)")
-openrouter_api_key = ""
 if generer_ia:
     openrouter_api_key = st.text_input("Clé API OpenRouter", type="password")
+else:
+    openrouter_api_key = ""
 
 if excel_file and template_file:
     try:
         df = pd.read_excel(excel_file)
-
         if not all(col in df.columns for col in REQUIRED_COLS):
             st.error(f"❌ Colonnes requises manquantes : {', '.join(REQUIRED_COLS)}")
             st.stop()
-
         st.success(f"✅ {len(df)} participants détectés")
 
         if st.button("Générer les questionnaires", type="primary"):
@@ -177,22 +123,19 @@ if excel_file and template_file:
                     f.write(template_file.read())
 
                 zip_path = os.path.join(tmpdir, "Questionnaires.zip")
-
                 with ZipFile(zip_path, 'w') as zipf:
                     progress_bar = st.progress(0)
-                   
                     for idx, row in df.iterrows():
                         commentaire = None
-                        if generer_ia and openrouter_api_key:
-                            try:
-                                commentaire = generer_commentaire_ia(openrouter_api_key, row['formation'])
-                            except Exception as e:
-                                st.warning(f"⚠️ Erreur IA pour {row['prénom']} : {str(e)}")
-                       
+                        remarque = None
+                        # Générer un commentaire IA et une remarque pour 1 participant sur 4
+                        if generer_ia and openrouter_api_key and idx % 4 == 0:
+                            commentaire = generer_commentaire_ia(openrouter_api_key, row['formation'])
+                            remarque = generer_commentaire_ia(openrouter_api_key, row['formation'])
                         try:
-                            output_path = generer_questionnaire(row, template_path, commentaire)
+                            output_path = generer_questionnaire(row, template_path, commentaire, remarque)
                             zipf.write(output_path, os.path.basename(output_path))
-                            progress_bar.progress((idx + 1)/len(df), text=f"Progress: {idx+1}/{len(df)}")
+                            progress_bar.progress((idx + 1) / len(df), text=f"Progress: {idx+1}/{len(df)}")
                         except Exception as e:
                             st.error(f"❌ Échec génération {row['prénom']} : {str(e)}")
                             continue
@@ -205,6 +148,5 @@ if excel_file and template_file:
                         file_name="Questionnaires_Satisfaction.zip",
                         mime="application/zip"
                     )
-
     except Exception as e:
         st.error(f"🚨 Erreur critique : {str(e)}")
