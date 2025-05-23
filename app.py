@@ -45,13 +45,13 @@ Supports bien structurés
 On repart avec un système clé en main
 Résultats concrets dès la fin de la session
 
-Ta réponse doit être 100 % humaine, spontanée et fluide. Une seule phrase. Pas de formatage. Pas de liste. Juste un ressenti authentique."""
+Ta réponse doit être 100 % humaine, spontanée et fluide. Une seule phrase. Pas de formatage. Pas de liste. Juste un ressenti authentique. Propose 15 réponses."""
     )
 
     prompt_remarques = (
         f"""Tu viens de terminer une formation en {formation}. Rédige une phrase spontanée, comme si tu laissais un commentaire libre à chaud sur ton ressenti général ou un point que tu voudrais partager.
 
-Ta réponse peut contenir une appréciation générale, une suggestion, un ressenti, une émotion ou une remarque libre. Tu peux être personnel, tant que tu restes positif ou constructif.
+Ta réponse peut contenir une appréciation générale, une suggestion, un ressenti, une émotion ou une remarque libre. Tu peux être personnel, tant que tu restes positif ou constructif. Propose 15 réponses.
 
 ⚠️ Important :
 - Des fois tu peux commencer par un Je et des fois par des adjectif soit aléatoire entre le choix des deux
