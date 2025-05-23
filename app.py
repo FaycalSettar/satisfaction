@@ -49,7 +49,6 @@ def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
         8-Les cours qui sont sous format numérique et interactif que l'on peut consulter à la demande.
         9-formateur pédagogue prends son temps
         10-gestion de dossier admin tout est ok en plus de la formation
-        réponse en quelques mots
         """
     )
     data = {
