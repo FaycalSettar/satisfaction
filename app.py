@@ -33,19 +33,20 @@ def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
         "Content-Type": "application/json"
     }
     prompt = (
-        f"""        
-        ne commence pas ta phrase toujours avec la même accroche propose des phrases plus complètes et humaines. Tu es un apprenant venant de terminer une formation en {formation}. Inspire-toi des exemples suivants, mais change toujours l'accroche :
-        1-Explications claires et outils
-        2-Formation pratico pratique
-        3-Une formation vraiment au top
-        4-Le contenu, les supports
-        5-Le formateur très pédagogue
-        6-Ouvert à tous, simple d’utilisation
-        7-La recherche Boléenne
-        8-Cours numériques interactifs à la demande
-        9-Le formateur prend son temps
-        10-Gestion de dossier admin ok
-        """
+        f"""Tu viens de suivre une formation en {formation}. Rédige une seule phrase courte et naturelle pour décrire ton ressenti. N'utilise aucune liste, numéro, puce, tiret, ou mise en forme Markdown (comme **gras** ou *italique*). Ne commence pas par "1.", "2.", "-", ou autre symbole. Ne donne qu’une phrase, sans retour à la ligne.
+
+Inspire-toi librement des idées suivantes (mais sans les reprendre telles quelles) :
+Explications claires et outils
+Formation pratico-pratique
+Plein de tips concrets
+Le formateur est pédagogue
+Cours interactifs accessibles à tout moment
+Supports bien structurés
+On repart avec un système clé en main
+Résultats concrets dès la fin de la session
+
+Ta réponse doit être 100 % humaine, spontanée et fluide. Une seule phrase. Pas de formatage. Pas de liste. Juste un ressenti authentique.
+"""
     )
     data = {
         "model": "openai/gpt-4.1",
