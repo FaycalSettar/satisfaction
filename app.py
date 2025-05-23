@@ -61,17 +61,17 @@ Ta réponse peut contenir une appréciation générale, une suggestion, un resse
     )
 
     def appeler_api(prompt):
-        data = {
-            "model": "openai/gpt-4.1",
-            "messages": [{"role": "user", "content": prompt}],
-            "temperature": 0.5,
-            "max_tokens": 100
-        }
-        response = requests.post(url, headers=headers, json=data, timeout=10)
-        response.raise_for_status()
-        raw = response.json()['choices'][0]['message']['content'].strip()
-        options = [ligne.strip() for ligne in raw.splitlines() if ligne.strip()]
-        return random.choice(options) if options else ""
+    data = {
+        "model": "openai/gpt-4.1",
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.5,
+        "max_tokens": 100
+    }
+    response = requests.post(url, headers=headers, json=data, timeout=10)
+    response.raise_for_status()
+    raw = response.json()['choices'][0]['message']['content'].strip()
+    options = [ligne.strip() for ligne in raw.splitlines() if ligne.strip()]
+    return random.choice(options) if options else ""
 
     try:
         commentaire_points_forts = appeler_api(prompt_points_forts)
