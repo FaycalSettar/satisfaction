@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from docx import Document  # Nécessite l'installation de python-docx
+from docx import Document
 import os
 import tempfile
 from zipfile import ZipFile
@@ -29,10 +29,10 @@ def remplacer_placeholders(paragraph, replacements):
 
 def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
     """Génère un commentaire IA via OpenRouter, en choisissant aléatoirement parmi plusieurs options"""
-    url = "https://openrouter.ai/api/v1/chat/completions"
+    url = "https://openrouter.ai/api/v1/chat/completions "
     headers = {
         "Authorization": f"Bearer {openrouter_api_key}",
-        "HTTP-Referer": "https://formation-entreprise.com",
+        "HTTP-Referer": "https://formation-entreprise.com ",
         "X-Title": "Générateur Questionnaires",
         "Content-Type": "application/json"
     }
@@ -45,7 +45,7 @@ def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
         4-Le contenu, les supports
         5-Le formateur est très pédagogue et maîtrise parfaitement le sujet. Le fait d'être en petit comité est très appréciable.
         6-Ouvert à tous et simple d’utilisation. Résultats concrets
-        7-La recherche Boléenne
+        7-La recherche Boléanne
         8-Les cours qui sont sous format numérique et interactif que l'on peut consulter à la demande.
         9-formateur pédagogue prends son temps
         10-gestion de dossier admin tout est ok en plus de la formation
@@ -183,7 +183,8 @@ if excel_file and template_file:
                    
                     for idx, row in df.iterrows():
                         commentaire = None
-                        if generer_ia and openrouter_api_key:
+                        # Nouvelle logique : 1 chance sur 4 de générer un commentaire
+                        if generer_ia and openrouter_api_key and random.random() < 0.25:
                             try:
                                 commentaire = generer_commentaire_ia(openrouter_api_key, row['formation'])
                             except Exception as e:
