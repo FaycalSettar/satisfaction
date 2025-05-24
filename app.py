@@ -181,6 +181,24 @@ if excel_file and template_file:
 
         st.success(f"✅ {len(df)} participants détectés")
 
+        # ➕ Prévisualisation IA aléatoire
+        if generer_ia and openrouter_api_key:
+            st.markdown("### 🎲 Prévisualiser un commentaire IA aléatoire")
+
+            if st.button("🧠 Générer une prévisualisation pour un participant sélectionné aléatoirement"):
+                candidats = df.iloc[::frequence_ia]
+                if not candidats.empty:
+                    participant_test = candidats.sample(1).iloc[0]
+                    cmt_fort, cmt_libre = generer_commentaire_ia(openrouter_api_key, participant_test['formation'])
+
+                    st.markdown(f"**👤 Participant : {participant_test['prénom']} {participant_test['nom']} – Formation : {participant_test['formation']}**")
+                    st.markdown("**🟢 Commentaire : Points forts**")
+                    st.info(cmt_fort)
+                    st.markdown("**💬 Commentaire : Remarque libre**")
+                    st.info(cmt_libre)
+                else:
+                    st.warning("Aucun participant éligible avec la fréquence définie.")
+
         if st.button("Générer les questionnaires", type="primary"):
             with tempfile.TemporaryDirectory() as tmpdir:
                 template_path = os.path.join(tmpdir, "template.docx")
