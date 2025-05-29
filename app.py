@@ -149,7 +149,7 @@ def generer_questionnaire(participant, template_path, commentaire_ia=None, comme
 
     safe_prenom = re.sub(r'[^a-zA-Z0-9]', '_', str(participant['prénom']))
     safe_nom = re.sub(r'[^a-zA-Z0-9]', '_', str(participant['nom']))
-    filename = f"Questionnaire_{safe_prenom}_{safe_nom}_{participant['session']}.docx"
+    filename = f"Questionnaire_satisfaction_{safe_prenom}_{safe_nom}_{participant['session']}.docx"
     
     output_path = os.path.join(tempfile.gettempdir(), filename)
     doc.save(output_path)
