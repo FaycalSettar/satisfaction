@@ -57,7 +57,8 @@ Ta réponse peut contenir une appréciation générale, une suggestion, un resse
 - Ne commence pas par un numéro, un tiret ou une liste
 - Ne fais pas de mise en forme (pas de gras, italique, etc.)
 - Ne retourne qu'une seule phrase courte, humaine, naturelle
-- Ne commence pas tes phrases par un vrai coup de boost ou un vrai plaisir soit aléatoire dans tes propositions"""
+- Ne commence pas tes phrases par un vrai coup de boost ou un vrai plaisir soit aléatoire dans tes propositions
+Ta réponse doit être 100 % humaine, spontanée et fluide. Une seule phrase. Pas de formatage. Pas de liste. Juste un ressenti authentique."""
     )
 
     def appeler_api(prompt):
