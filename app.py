@@ -110,7 +110,8 @@ def generer_questionnaire(participant, template_path, commentaire_ia=None, comme
             current_section = 'formation'
             continue
         elif any(keyword in text for keyword in [
-            'Qualité du service et des échanges',
+            'évaluation de la formation',
+            'qualité du service',
             'qualité du contenu',
             'pertinence du contenu',
             'clarté et organisation',
