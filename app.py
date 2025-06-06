@@ -15,13 +15,48 @@ st.title("Générateur de Questionnaires de Satisfaction à Chaud")
 REQUIRED_COLS = ['nom', 'prénom', 'email', 'session', 'formation', 'formateur']
 
 def remplacer_placeholders(paragraph, replacements):
+    """Version corrigée avec gestion des styles de caractères"""
     if not paragraph.text:
         return
+    
+    # 1. Fusionner tous les runs du paragraphe en conservant les styles
+    full_text = ''.join(run.text for run in paragraph.runs)
+    
+    # 2. Effectuer tous les remplacements sur le texte complet
     for key, value in replacements.items():
-        if key in paragraph.text:
-            for run in paragraph.runs:
-                if key in run.text:
-                    run.text = run.text.replace(key, value)
+        if key in full_text:
+            full_text = full_text.replace(key, value)
+    
+    # 3. Sauvegarder les propriétés de style du premier run
+    if paragraph.runs:
+        first_run = paragraph.runs[0]
+        font = first_run.font
+        saved_style = {
+            'bold': font.bold,
+            'italic': font.italic,
+            'underline': font.underline,
+            'size': font.size,
+            'color': font.color.rgb if font.color else None,
+            'name': font.name
+        }
+    else:
+        saved_style = None
+    
+    # 4. Effacer le paragraphe et recréer le texte
+    paragraph.clear()
+    new_run = paragraph.add_run(full_text)
+    
+    # 5. Restaurer les propriétés de style
+    if saved_style:
+        new_run.font.bold = saved_style['bold']
+        new_run.font.italic = saved_style['italic']
+        new_run.font.underline = saved_style['underline']
+        if saved_style['size']:
+            new_run.font.size = saved_style['size']
+        if saved_style['color']:
+            new_run.font.color.rgb = saved_style['color']
+        if saved_style['name']:
+            new_run.font.name = saved_style['name']
 
 def generer_commentaire_ia(openrouter_api_key, formation="la formation"):
     url = "https://openrouter.ai/api/v1/chat/completions"
@@ -100,6 +135,7 @@ def generer_questionnaire(participant, template_path, commentaire_ia=None, comme
     formation_choice = str(participant['formation']).strip().lower()
     answer = None
 
+    # Remplacer les placeholders dans tous les paragraphes
     for para in doc.paragraphs:
         remplacer_placeholders(para, replacements)
 
@@ -133,6 +169,9 @@ def generer_questionnaire(participant, template_path, commentaire_ia=None, comme
 
         # Traitement des checkboxes
         if '{{checkbox}}' in para.text:
+            # Sauvegarder le style d'origine
+            original_style = para.style
+            
             option_text = para.text.replace('{{checkbox}}', '').strip()
             clean_option = option_text.split(']')[-1].strip().lower()
 
@@ -146,7 +185,11 @@ def generer_questionnaire(participant, template_path, commentaire_ia=None, comme
                 symbol = '☐'
 
             original_text = option_text.split('[')[-1].split(']')[0].strip()
-            para.text = f'{symbol} {original_text}'
+            
+            # Réinitialiser le paragraphe avec le nouveau contenu
+            para.clear()
+            para.add_run(f'{symbol} {original_text}')
+            para.style = original_style
 
     safe_prenom = re.sub(r'[^a-zA-Z0-9]', '_', str(participant['prénom']))
     safe_nom = re.sub(r'[^a-zA-Z0-9]', '_', str(participant['nom']))
