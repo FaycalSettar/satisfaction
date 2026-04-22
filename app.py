@@ -232,11 +232,23 @@ def generer_questionnaire(participant, template_path,
     classified = []
     current_section = None
 
+    # Open-question slots (empty paragraphs right after the relevant question)
+    points_forts_slot = None
+    remarques_slot = None
+    pending_slot_kind = None  # 'points_forts' | 'remarques' | None
+
     for para in doc.paragraphs:
         remplacer_placeholders(para, legacy_replacements)
         raw = para.text
 
         if not raw.strip():
+            # Empty paragraph — if a slot was pending, this is it
+            if pending_slot_kind == 'points_forts' and points_forts_slot is None:
+                points_forts_slot = para
+                pending_slot_kind = None
+            elif pending_slot_kind == 'remarques' and remarques_slot is None:
+                remarques_slot = para
+                pending_slot_kind = None
             classified.append({'para': para, 'kind': 'empty'})
             continue
 
@@ -260,6 +272,13 @@ def generer_questionnaire(participant, template_path,
             section = detect_section(text_norm)
             if section:
                 current_section = section
+            # Open-question slot detection
+            if 'points forts de cette formation' in text_norm:
+                pending_slot_kind = 'points_forts'
+            elif 'autres commentaires' in text_norm or 'commentaires / remarques' in text_norm:
+                pending_slot_kind = 'remarques'
+            elif 'points a ameliorer' in text_norm or 'points a am' in text_norm:
+                pending_slot_kind = None  # don't auto-fill this one
             classified.append({'para': para, 'kind': 'question'})
 
     # ---- PASS 2: decide which checkboxes to tick ----
@@ -321,6 +340,12 @@ def generer_questionnaire(participant, template_path,
         if item['kind'] != 'checkbox':
             continue
         replace_checkbox_symbol(item['para'], '☑' if i in checked_indices else '☐')
+
+    # ---- PASS 4: write AI comments into their slots (if generated) ----
+    if commentaire_points_forts and points_forts_slot is not None:
+        points_forts_slot.add_run(str(commentaire_points_forts))
+    if commentaire_remarques and remarques_slot is not None:
+        remarques_slot.add_run(str(commentaire_remarques))
 
     # Save
     safe_prenom = re.sub(r'[^a-zA-Z0-9]', '_', str(participant['prénom']))
